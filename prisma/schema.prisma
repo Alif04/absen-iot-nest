@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,21 +8,62 @@ datasource db {
 }
 
 model users {
-  id         Int       @id @default(autoincrement())
-  username   String    @db.VarChar(250)
-  password   String    @db.VarChar(250)
-  role       Int
-  created_at DateTime? @default(now()) @db.DateTime()
-  updated_at DateTime? @db.DateTime()
+  id         Int          @id @default(autoincrement())
+  username   String       @db.VarChar(250)
+  password   String       @db.VarChar(250)
+  role_id    Int // Perubahan: Mengganti nama field dari 'role' menjadi 'role_id'
+  created_at DateTime?    @default(now()) @db.DateTime()
+  updated_at DateTime?    @db.DateTime()
+  roles      role         @relation(fields: [role_id], references: [id])
+  user_rayon user_rayon[]
 }
 
 model siswa {
   id         Int       @id @default(autoincrement())
   nama       String    @db.VarChar(250)
   nis        String    @db.VarChar(250)
-  rayon      String    @db.VarChar(250)
-  jurusan    String    @db.VarChar(250)
   kelas      String    @db.VarChar(250)
+  jurusan_id Int?
+  rayon_id   Int?
   created_at String    @db.VarChar(250)
   updated_at DateTime? @db.DateTime()
+  rayon      rayon?    @relation(fields: [rayon_id], references: [id])
+  jurusan    jurusan?  @relation(fields: [jurusan_id], references: [id])
+}
+
+model rayon {
+  id         Int          @id @default(autoincrement())
+  rayon_name String       @db.VarChar(250)
+  created_at DateTime?    @default(now()) @db.DateTime()
+  updated_at DateTime?    @db.DateTime()
+  siswa      siswa[]
+  user_rayon user_rayon[]
+}
+
+model role {
+  id         Int       @id @default(autoincrement())
+  role_name  String    @db.VarChar(250)
+  created_at DateTime? @default(now()) @db.DateTime()
+  updated_at DateTime? @db.DateTime()
+  deleted_at DateTime? @db.DateTime()
+  user       users[]
+}
+
+model user_rayon {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  rayon_id   Int
+  created_at DateTime? @default(now()) @db.DateTime()
+  updated_at DateTime? @db.DateTime()
+  deleted_at DateTime? @db.DateTime()
+  rayon      rayon?    @relation(fields: [rayon_id], references: [id])
+  users      users?    @relation(fields: [user_id], references: [id])
+}
+
+model jurusan {
+  id           Int       @id @default(autoincrement())
+  jurusan_name String    @db.VarChar(250)
+  created_at   DateTime? @default(now()) @db.DateTime()
+  updated_at   DateTime? @db.DateTime()
+  siswa        siswa[]
 }

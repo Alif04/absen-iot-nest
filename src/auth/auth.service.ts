@@ -70,12 +70,12 @@ export class AuthService {
    * @returns
    */
   async generateJwt(user: users, secret: any) {
-    const { id, username, role } = user;
+    const { id, username, role_id } = user;
     const accessToken = await this.jwtService.sign(
       {
-        sub: id,
+        id: id,
         username,
-        role,
+        role_id,
       },
       {
         secret,

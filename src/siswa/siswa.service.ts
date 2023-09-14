@@ -16,11 +16,19 @@ export class SiswaService {
       await this.dbService.siswa.create({
         data: {
           nama: createSiswaDto.nama,
-          jurusan: createSiswaDto.jurusan,
+          jurusan: {
+            connect: {
+              id: createSiswaDto.jurusan_id
+            }
+          },
           kelas: createSiswaDto.kelas,
           nis: createSiswaDto.nis,
-          rayon: createSiswaDto.rayon,
-          created_at: formattedDate
+          created_at: formattedDate,
+          rayon: {
+            connect: {
+              id: createSiswaDto.rayon_id
+            }
+          }
         }
       })
 
@@ -39,9 +47,24 @@ export class SiswaService {
     }
   }
 
-  async findAll() {
+  async findAll(user_id: number) {
     try {
-      const siswa = await this.dbService.siswa.findMany()
+      const users = await this.dbService.user_rayon.findFirst({
+        where: {
+          users: {
+            id: user_id
+          }
+        }
+      })
+
+
+      const siswa = await this.dbService.siswa.findMany({
+        where: {
+          rayon_id: users.rayon_id
+        }
+      })
+      console.log(users, siswa);
+
 
       return {
         status: HttpStatus.OK,
@@ -49,6 +72,8 @@ export class SiswaService {
         data: siswa
       }
     } catch (err) {
+      console.log(err);
+
       return {
         status: HttpStatus.BAD_REQUEST,
         message: 'Failed'
@@ -56,15 +81,21 @@ export class SiswaService {
     }
   }
 
-  async findOne(jurursan: string, kelas: string, rayon: string) {
+  async findOne(jurusan_id: number, kelas: string, rayon_id: number) {
     try {
       const siswa = await this.dbService.siswa.findMany({
         where: {
-          jurusan: jurursan,
+          jurusan_id: jurusan_id,
           kelas: kelas,
-          rayon: rayon
+          rayon_id: rayon_id
+        },
+        include: {
+          jurusan: true,
+          rayon: true
         }
       })
+
+
 
       return {
         status: HttpStatus.OK,
@@ -72,6 +103,8 @@ export class SiswaService {
         data: siswa
       }
     } catch (err) {
+      console.log(err);
+
       return {
         status: HttpStatus.BAD_REQUEST,
         message: 'Failed'
@@ -147,6 +180,30 @@ export class SiswaService {
         status: HttpStatus.BAD_REQUEST,
         message: 'Failed',
       };
+    }
+  }
+
+  async getByDate(date: string) {
+    try {
+      const data = await this.dbService.siswa.findMany({
+        where: {
+          created_at: {
+            contains: date
+          }
+
+        }
+      })
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Succesfully',
+        data: data
+      }
+    } catch (err) {
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Failed'
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsEnum } from 'class-validator';
 
 export class CreateSiswaDto {
     @IsNotEmpty()
@@ -10,12 +10,12 @@ export class CreateSiswaDto {
     nis: string;
 
     @IsNotEmpty()
-    @IsString()
-    rayon: string;
+    @IsNumber()
+    rayon_id: number;
 
     @IsNotEmpty()
-    @IsString()
-    jurusan: string;
+    @IsNumber()
+    jurusan_id: number;
 
     @IsNotEmpty()
     @IsString()

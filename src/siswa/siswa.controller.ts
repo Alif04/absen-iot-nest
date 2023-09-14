@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, Request } from '@nestjs/common';
 import { SiswaService } from './siswa.service';
 import { CreateSiswaDto } from './dto/create-siswa.dto';
 import { UpdateSiswaDto } from './dto/update-siswa.dto';
@@ -21,13 +21,14 @@ export class SiswaController {
   }
 
   @Get('/get')
-  findAll() {
-    return this.siswaService.findAll();
+  findAll(@Request() req) {
+    const user_id = req.user.id
+    return this.siswaService.findAll(user_id);
   }
 
-  @Get('/get/:jurursan/:rayon/:kelas')
-  findOne(@Param('jurusan') jurusan: string, @Param('kelas') kelas: string, @Param('rayon') rayon: string) {
-    return this.siswaService.findOne(jurusan, kelas, rayon);
+  @Get('/get/:jurusan_id/:rayon_id/:kelas')
+  findOne(@Param('jurusan_id') jurusan_id: string, @Param('kelas') kelas: string, @Param('rayon_id') rayon_id: string) {
+    return this.siswaService.findOne(+jurusan_id, kelas, +rayon_id);
   }
 
   @Get('/export-excel')
@@ -71,4 +72,10 @@ export class SiswaController {
   remove(@Param('id') id: string) {
     return this.siswaService.remove(+id);
   }
+
+  @Get('/get/:date')
+  getByDate(@Param('date') date: string) {
+    return this.siswaService.getByDate(date)
+  }
+
 }
